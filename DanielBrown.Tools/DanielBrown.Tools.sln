@@ -5,20 +5,25 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impersonation", "Impersonat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ABF1ED1F-F788-4656-97BD-8E843CB6BB38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DanielBrown.Tools.ActiveDirectory", "DanielBrown.Tools.ActiveDirectory\DanielBrown.Tools.ActiveDirectory.csproj", "{18A54604-9A4E-44B7-A567-C7A920543CDF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActiveDirectory", "DanielBrown.Tools.ActiveDirectory\ActiveDirectory.csproj", "{18A54604-9A4E-44B7-A567-C7A920543CDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImpersonationConsoleSample", "ImpersonationConsoleSample\ImpersonationConsoleSample.csproj", "{8882C705-C991-4E0A-BC66-9D1B9FB7B152}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
+		SccNumberOfProjects = 4
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs04.codeplex.com/
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = DanielBrown.Tools.ActiveDirectory\\DanielBrown.Tools.ActiveDirectory.csproj
-		SccProjectName1 = DanielBrown.Tools.ActiveDirectory
-		SccLocalPath1 = DanielBrown.Tools.ActiveDirectory
-		SccProjectUniqueName2 = Impersonation\\Impersonation.csproj
-		SccProjectName2 = Impersonation
-		SccLocalPath2 = Impersonation
+		SccProjectUniqueName1 = Impersonation\\Impersonation.csproj
+		SccProjectName1 = Impersonation
+		SccLocalPath1 = Impersonation
+		SccProjectUniqueName2 = ImpersonationConsoleSample\\ImpersonationConsoleSample.csproj
+		SccProjectName2 = ImpersonationConsoleSample
+		SccLocalPath2 = ImpersonationConsoleSample
+		SccProjectUniqueName3 = DanielBrown.Tools.ActiveDirectory\\ActiveDirectory.csproj
+		SccProjectName3 = DanielBrown.Tools.ActiveDirectory
+		SccLocalPath3 = DanielBrown.Tools.ActiveDirectory
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +38,10 @@ Global
 		{18A54604-9A4E-44B7-A567-C7A920543CDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18A54604-9A4E-44B7-A567-C7A920543CDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18A54604-9A4E-44B7-A567-C7A920543CDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8882C705-C991-4E0A-BC66-9D1B9FB7B152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8882C705-C991-4E0A-BC66-9D1B9FB7B152}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8882C705-C991-4E0A-BC66-9D1B9FB7B152}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8882C705-C991-4E0A-BC66-9D1B9FB7B152}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
