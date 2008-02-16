@@ -139,7 +139,7 @@ namespace DanielBrown.Tools.Impersonation
         {
             try
             {
-                this.Undo(); // Attempt 1: Undo()
+                this.DoUndo(); // Attempt 1: DoUndo()
             }
             catch (LogoffException le)
             {
