@@ -35,6 +35,9 @@ namespace ImpersonationConsoleSample
                 i.Undo();
                 i.Dispose();
 
+                // Say Current User
+                Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+
                 // Impersonating a User with the using cluase
                 using (Impersonator im = new Impersonator(SampleUsername, SampleDomain, SamplePassword))
                 {
