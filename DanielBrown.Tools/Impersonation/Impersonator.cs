@@ -117,12 +117,15 @@ namespace DanielBrown.Tools.Impersonation
 
                 if (!logonSucceeded)
                 {
+                    this.WriteToEventLog(string.Format("Impersonation failed for user: {0}", this.m_Username), EventLogEntryType.Error);
                     // if the logon failed, get the error code and throw an exception
                     throw new LogonException(string.Format(string.Format("User logon failed. Error Number: {0}", Marshal.GetLastWin32Error())));
                 }
 
                 // if logon succeeds, create a WindowsIdentity instance
                 m_impersonationIdentity = new WindowsIdentity(tokenHandle);
+
+                this.WriteToEventLog(string.Format("Success! Impersonate user: {0}", this.m_Username), EventLogEntryType.Information);
 
                 return m_impersonationIdentity;
             }
@@ -137,6 +140,7 @@ namespace DanielBrown.Tools.Impersonation
         /// </summary>
         public void Impersonate()
         {
+            this.WriteToEventLog(string.Format("Attempting to Impersonate user: {0}", this.m_Username), EventLogEntryType.Information);
             this.m_impersonationContext = this.Logon().Impersonate();
         }
 
@@ -147,23 +151,23 @@ namespace DanielBrown.Tools.Impersonation
         {
             try
             {
+                this.WriteToEventLog(string.Format("Attempting to Undo impersonation of user: {0}", this.m_Username), EventLogEntryType.Information);
                 this.DoUndo(); // Attempt 1: DoUndo()
             }
             catch (LogoffException le)
             {
 
-                m_OrginalConext = m_OriginalIdentity.Impersonate();
                 StringBuilder sbError = new StringBuilder();
 
                 sbError.AppendLine("Unable to Undo Impersonation.");
                 sbError.AppendLine(Environment.NewLine);
                 sbError.AppendLine("Reason:");
                 sbError.AppendLine(le.ToString());
-                
-                EventLog.WriteEntry(this.m_EventLogSource, sbError.ToString(), EventLogEntryType.Error);
+
+                this.WriteToEventLog(sbError.ToString(), EventLogEntryType.Error);
 
 
-                EventLog.WriteEntry(this.m_EventLogSource, "Attempting ExitWindowsEx", EventLogEntryType.Error);
+                this.WriteToEventLog("Attempting ExitWindowsEx", EventLogEntryType.Warning);
                 m_OrginalConext.Undo();
                 try
                 {
@@ -172,10 +176,24 @@ namespace DanielBrown.Tools.Impersonation
                 }
                 catch (LogoffException le2)
                 {
-                    EventLog.WriteEntry(this.m_EventLogSource, "FATAL ! WARNING ! ERROR ! Unable to revert back to previus user context! Code is still running under a different account!", EventLogEntryType.Error);
+                    this.WriteToEventLog("FATAL ! WARNING ! ERROR ! Unable to revert back to previus user context! Code is still running under a different account!", EventLogEntryType.Error);
+                    StringBuilder sbError1 = new StringBuilder();
+                    sbError1.AppendLine("Unable to Undo Impersonation.");
+                    sbError1.AppendLine(Environment.NewLine);
+                    sbError1.AppendLine("Reason:");
+                    sbError1.AppendLine(le2.ToString());
+                    this.WriteToEventLog(sbError1.ToString(), EventLogEntryType.Error);
+
                     throw new ApplicationException("FATAL: Unable to logoff the impersonated user!", le2);
                 }
             }
+        }
+
+        private void WriteToEventLog(string Message, EventLogEntryType Type)
+        {
+            m_OrginalConext = m_OriginalIdentity.Impersonate();
+            EventLog.WriteEntry(this.m_EventLogSource, Message, Type);
+            m_OrginalConext.Undo();
         }
 
         private void DoUndo()
@@ -187,6 +205,7 @@ namespace DanielBrown.Tools.Impersonation
             }
             catch (Exception e)
             {
+                this.WriteToEventLog("Unable to Undo()", EventLogEntryType.Error);
                 throw new LogoffException("Unable to Undo()", e);
             }
         }
@@ -215,6 +234,7 @@ namespace DanielBrown.Tools.Impersonation
 
             if (rval == 0) // starting the shutdown failed
             {
+                this.WriteToEventLog("FATAL: ExitWindowsEx Failed", EventLogEntryType.Error);
                 throw new LogoffException("FATAL: ExitWindowsEx Failed");
             }
         }
