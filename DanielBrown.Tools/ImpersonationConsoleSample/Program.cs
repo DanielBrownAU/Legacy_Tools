@@ -22,7 +22,7 @@ namespace ImpersonationConsoleSample
                 // Say Current User
                 Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
                 // Impersonating a User
-                i = new Impersonator(SampleUsername, SampleDomain, SamplePassword, 1);
+                i = new Impersonator(SampleUsername, SampleDomain, SamplePassword, 10);
 
                 i.Impersonate();
 
