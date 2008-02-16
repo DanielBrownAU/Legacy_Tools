@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using System.Timers;
 
 namespace DanielBrown.Tools.Impersonation
 {
@@ -10,6 +11,9 @@ namespace DanielBrown.Tools.Impersonation
         private string m_Username = string.Empty;
         private string m_Password = string.Empty;
         private string m_Domain = string.Empty;
+        
+        private Timer m_ExpireTimer = new Timer();
+        
         /// <summary>
         /// This will hold the security context for reverting back to the client after impersonation operations are complete
         /// </summary>
@@ -24,6 +28,14 @@ namespace DanielBrown.Tools.Impersonation
             // Empty
         }
 
+        private void m_ExpireTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            this.Undo();
+            this.m_ExpireTimer.Stop();
+            this.m_ExpireTimer.Close();
+            this.m_ExpireTimer.Dispose();
+        }
+
         /// <summary>
         /// Creates an im-memory instance of the Impersonator with the supplied values
         /// </summary>
@@ -35,7 +47,7 @@ namespace DanielBrown.Tools.Impersonation
         {
 
             // Sanity Checking!
-            if(string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(username))
             {
                 throw new LogonException("Invalid Username.");
             }
@@ -47,7 +59,7 @@ namespace DanielBrown.Tools.Impersonation
 
             // set the properties used for domain user account
             this.m_Username = username;
-            
+
             if (domain == null) // need to figure out a way to set this to local machine
             {
                 domain = string.Empty;
@@ -55,6 +67,22 @@ namespace DanielBrown.Tools.Impersonation
 
             this.m_Domain = domain;
             this.m_Password = password;
+        }
+
+        /// <summary>
+        /// Creates an im-memory instance of the Impersonator with the supplied values
+        /// </summary>
+        /// <param name="username">The Username of the User to impersonate</param>
+        /// <param name="domain">The Domain ofthe User to impersonate</param>
+        /// <param name="password">The Password of the User to imperonate</param>
+        /// <param name="interval">Maximum amount of time before the timer fires and reverts to the previus context</param>
+        public Impersonator(string username, string domain, string password, double interval)
+            : this(username, domain, password)
+        {
+            this.m_ExpireTimer.Interval = interval;
+            this.m_ExpireTimer.Elapsed += new ElapsedEventHandler(m_ExpireTimer_Elapsed);
+            this.m_ExpireTimer.Enabled = true;
+            this.m_ExpireTimer.Start();
         }
 
         private WindowsIdentity Logon()
@@ -106,6 +134,9 @@ namespace DanielBrown.Tools.Impersonation
             this.impersonationContext.Undo();
         }
 
+        /// <summary>
+        /// Diposes the Impersonator's resources and also calls Undo()
+        /// </summary>
         public void Dispose()
         {
             this.Undo();
