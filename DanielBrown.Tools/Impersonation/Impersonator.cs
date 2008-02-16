@@ -102,6 +102,7 @@ namespace DanielBrown.Tools.Impersonation
             this.m_ExpireTimer = new Timer(); // only create an instance of the timer, if they want to use it by using this constructor
             this.m_ExpireTimer.Interval = interval;
             this.m_ExpireTimer.Elapsed += new ElapsedEventHandler(m_ExpireTimer_Elapsed);
+            this.m_ExpireTimer.Start();
         }
 
         private WindowsIdentity Logon()
@@ -123,8 +124,6 @@ namespace DanielBrown.Tools.Impersonation
 
                 // if logon succeeds, create a WindowsIdentity instance
                 m_impersonationIdentity = new WindowsIdentity(tokenHandle);
-
-                this.m_ExpireTimer.Start();
 
                 this.WriteToEventLog(string.Format("Success! Impersonate user: {0}", this.m_Username), EventLogEntryType.Information);
 
