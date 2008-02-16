@@ -10,5 +10,12 @@ namespace DanielBrown.Tools
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern bool LogonUser(string lpszUsername, string lpszDomain, string lpszPassword, int dwLogonType, int dwLogonProvider, ref IntPtr phToken);
+
+        [DllImport("user32")]
+        public extern static int ExitWindowsEx(int uFlags, int dwReason);
+        public static readonly int EWX_LOGOFF = 0;
+        public static readonly int EWX_FORCE = 4;
+        public static readonly int EWX_FORCEIFHUNG = 10;
+
     }
 }
