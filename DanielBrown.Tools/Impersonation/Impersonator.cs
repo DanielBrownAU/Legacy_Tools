@@ -10,6 +10,10 @@ namespace DanielBrown.Tools.Impersonation
     public class Impersonator : IDisposable
     {
         #region Private Members
+
+        private IntPtr tokenHandle = new IntPtr(0);
+        
+
         private string m_EventLogSource = "Impersonator";
 
         private string m_Username = string.Empty;
@@ -18,10 +22,14 @@ namespace DanielBrown.Tools.Impersonation
 
         private Timer m_ExpireTimer = null;
 
+        private WindowsIdentity m_impersonationIdentity = null;
         /// <summary>
         /// This will hold the security context for reverting back to the client after impersonation operations are complete
         /// </summary>
-        private WindowsImpersonationContext impersonationContext = null;
+        private WindowsImpersonationContext m_impersonationContext = null;
+
+        private WindowsIdentity m_OriginalIdentity = null;
+        private WindowsImpersonationContext m_OrginalConext = null;
         #endregion
 
         /// <summary>
@@ -29,7 +37,12 @@ namespace DanielBrown.Tools.Impersonation
         /// </summary>
         private Impersonator()
         {
-            // Empty
+            this.m_OriginalIdentity = System.Security.Principal.WindowsIdentity.GetCurrent(); // Orginal Identify
+
+            if (EventLog.SourceExists(this.m_EventLogSource)) // Check to see if the Event Source is created
+            {
+                EventLog.CreateEventSource(this.m_EventLogSource, this.m_EventLogSource); // Create the Event Source
+            }
         }
 
         private void m_ExpireTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -94,17 +107,13 @@ namespace DanielBrown.Tools.Impersonation
 
         private WindowsIdentity Logon()
         {
-            IntPtr handle = new IntPtr(0);
-
             try
             {
-                handle = IntPtr.Zero;
-
                 const int LOGON32_LOGON_NETWORK = 3;
                 const int LOGON32_PROVIDER_DEFAULT = 0;
 
                 // attempt to authenticate domain user account
-                bool logonSucceeded = Shell32.LogonUser(this.m_Username, this.m_Domain, this.m_Password, LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT, ref handle);
+                bool logonSucceeded = Shell32.LogonUser(this.m_Username, this.m_Domain, this.m_Password, LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT, ref tokenHandle);
 
                 if (!logonSucceeded)
                 {
@@ -113,14 +122,13 @@ namespace DanielBrown.Tools.Impersonation
                 }
 
                 // if logon succeeds, create a WindowsIdentity instance
-                WindowsIdentity winIdentity = new WindowsIdentity(handle);
+                m_impersonationIdentity = new WindowsIdentity(tokenHandle);
 
-                return winIdentity;
+                return m_impersonationIdentity;
             }
             finally
             {
-                // close the open handle to the authenticated account
-                Shell32.CloseHandle(handle);
+
             }
         }
 
@@ -129,7 +137,7 @@ namespace DanielBrown.Tools.Impersonation
         /// </summary>
         public void Impersonate()
         {
-            this.impersonationContext = this.Logon().Impersonate();
+            this.m_impersonationContext = this.Logon().Impersonate();
         }
 
         /// <summary>
@@ -143,17 +151,20 @@ namespace DanielBrown.Tools.Impersonation
             }
             catch (LogoffException le)
             {
+
+                m_OrginalConext = m_OriginalIdentity.Impersonate();
                 StringBuilder sbError = new StringBuilder();
 
                 sbError.AppendLine("Unable to Undo Impersonation.");
                 sbError.AppendLine(Environment.NewLine);
                 sbError.AppendLine("Reason:");
                 sbError.AppendLine(le.ToString());
+                
                 EventLog.WriteEntry(this.m_EventLogSource, sbError.ToString(), EventLogEntryType.Error);
 
 
                 EventLog.WriteEntry(this.m_EventLogSource, "Attempting ExitWindowsEx", EventLogEntryType.Error);
-
+                m_OrginalConext.Undo();
                 try
                 {
                     // OK, DoUndo() has failed, try this, its hrash, but may be able to log off
@@ -172,7 +183,7 @@ namespace DanielBrown.Tools.Impersonation
             // revert back to original security context which was store in the WindowsImpersonationContext instance
             try
             {
-                this.impersonationContext.Undo();
+                this.m_impersonationContext.Undo();
             }
             catch (Exception e)
             {
@@ -193,6 +204,9 @@ namespace DanielBrown.Tools.Impersonation
                 // Dipose of the Timer
                 this.m_ExpireTimer.Dispose();
             }
+
+            // close the open handle to the authenticated account
+            Shell32.CloseHandle(tokenHandle);
         }
 
         private void TrySessionLogOff()
@@ -202,6 +216,14 @@ namespace DanielBrown.Tools.Impersonation
             if (rval == 0) // starting the shutdown failed
             {
                 throw new LogoffException("FATAL: ExitWindowsEx Failed");
+            }
+        }
+
+        public WindowsImpersonationContext ImpersonationContext
+        {
+            get
+            {
+                return this.m_impersonationContext;
             }
         }
     }
