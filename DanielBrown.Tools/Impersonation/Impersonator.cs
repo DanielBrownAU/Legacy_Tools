@@ -47,12 +47,13 @@ namespace DanielBrown.Tools.Impersonation
 
         private void m_ExpireTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-
-            this.Undo();
-
+            this.WriteToEventLog("Timer has Expired! Reverting Code!", EventLogEntryType.Information);
             this.m_ExpireTimer.Stop();
             this.m_ExpireTimer.Close();
             this.m_ExpireTimer.Dispose();
+            Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+            this.DoUndo();
+            Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
         }
 
         /// <summary>
@@ -101,8 +102,6 @@ namespace DanielBrown.Tools.Impersonation
             this.m_ExpireTimer = new Timer(); // only create an instance of the timer, if they want to use it by using this constructor
             this.m_ExpireTimer.Interval = interval;
             this.m_ExpireTimer.Elapsed += new ElapsedEventHandler(m_ExpireTimer_Elapsed);
-            this.m_ExpireTimer.Enabled = true;
-            this.m_ExpireTimer.Start();
         }
 
         private WindowsIdentity Logon()
@@ -124,6 +123,8 @@ namespace DanielBrown.Tools.Impersonation
 
                 // if logon succeeds, create a WindowsIdentity instance
                 m_impersonationIdentity = new WindowsIdentity(tokenHandle);
+
+                this.m_ExpireTimer.Start();
 
                 this.WriteToEventLog(string.Format("Success! Impersonate user: {0}", this.m_Username), EventLogEntryType.Information);
 
