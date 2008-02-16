@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LogoffException.cs" />
     <Compile Include="Impersonator.cs" />
     <Compile Include="LogonException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
