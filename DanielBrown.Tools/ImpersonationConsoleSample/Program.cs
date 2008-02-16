@@ -15,20 +15,35 @@ namespace ImpersonationConsoleSample
             try
             {
                 // Change theses to a user on your domain
-                string SampleUsername = "Username";
-                string SamplePassword = "password1";
-                string SampleDomain = "domain";
+                string SampleUsername = "testuser";
+                string SamplePassword = "password";
+                string SampleDomain = "";
 
+                // Say Current User
+                Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
                 // Impersonating a User
                 i = new Impersonator(SampleUsername, SampleDomain, SamplePassword);
+
                 i.Impersonate();
-                // .. Run Code
+
+                // ... Run Code
+                // ...
+
+                // Say Current User
+                Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+
                 i.Undo();
+                i.Dispose();
 
                 // Impersonating a User with the using cluase
                 using (Impersonator im = new Impersonator(SampleUsername, SampleDomain, SamplePassword))
                 {
+                    im.Impersonate();
                     // ... Run Code
+                    // ...
+
+                    // Say Current User
+                    Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
                 }
             }
             catch (LogonException le)
@@ -41,7 +56,15 @@ namespace ImpersonationConsoleSample
                 {
                     i.Dispose();
                 }
+
+                // Say Current User
+                Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+
+                Console.ReadLine();
             }
         }
     }
 }
+
+
+
