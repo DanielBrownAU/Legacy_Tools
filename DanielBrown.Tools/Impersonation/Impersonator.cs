@@ -39,7 +39,7 @@ namespace DanielBrown.Tools.Impersonation
         {
             this.m_OriginalIdentity = System.Security.Principal.WindowsIdentity.GetCurrent(); // Orginal Identify
 
-            if (EventLog.SourceExists(this.m_EventLogSource)) // Check to see if the Event Source is created
+            if (!EventLog.SourceExists(this.m_EventLogSource)) // Check to see if the Event Source is created
             {
                 EventLog.CreateEventSource(this.m_EventLogSource, this.m_EventLogSource); // Create the Event Source
             }
