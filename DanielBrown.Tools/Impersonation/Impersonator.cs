@@ -51,9 +51,9 @@ namespace DanielBrown.Tools.Impersonation
             this.m_ExpireTimer.Stop();
             this.m_ExpireTimer.Close();
             this.m_ExpireTimer.Dispose();
-            Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+
             this.DoUndo();
-            Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+
         }
 
         /// <summary>
