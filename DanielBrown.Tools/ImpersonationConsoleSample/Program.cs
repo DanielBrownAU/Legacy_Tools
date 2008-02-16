@@ -11,22 +11,37 @@ namespace ImpersonationConsoleSample
     {
         static void Main(string[] args)
         {
-            // Change theses to a user on your domain
-            string SampleUsername = "Username";
-            string SamplePassword = "password1";
-            string SampleDomain = "domain";
-
-            // Impersonating a User
-            Impersonator i = new Impersonator(SampleUsername, SampleDomain, SamplePassword);
-            i.Impersonate();
-            // .. Run Code
-            i.Undo();
-
-            // Impersonating a User with the using cluase
-            using (Impersonator im = new Impersonator(SampleUsername, SampleDomain, SamplePassword))
+            Impersonator i = null;
+            try
             {
-                // ... Run Code
-            }            
+                // Change theses to a user on your domain
+                string SampleUsername = "Username";
+                string SamplePassword = "password1";
+                string SampleDomain = "domain";
+
+                // Impersonating a User
+                i = new Impersonator(SampleUsername, SampleDomain, SamplePassword);
+                i.Impersonate();
+                // .. Run Code
+                i.Undo();
+
+                // Impersonating a User with the using cluase
+                using (Impersonator im = new Impersonator(SampleUsername, SampleDomain, SamplePassword))
+                {
+                    // ... Run Code
+                }
+            }
+            catch (LogonException le)
+            {
+                Console.WriteLine(le.ToString());
+            }
+            finally
+            {
+                if (i != null)
+                {
+                    i.Dispose();
+                }
+            }
         }
     }
 }
