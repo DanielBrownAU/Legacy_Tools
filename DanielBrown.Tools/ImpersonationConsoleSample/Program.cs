@@ -33,7 +33,6 @@ namespace ImpersonationConsoleSample
                 Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
 
                 i.Undo();
-                i.Dispose();
 
                 // Say Current User
                 Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
@@ -55,11 +54,6 @@ namespace ImpersonationConsoleSample
             }
             finally
             {
-                if (i != null)
-                {
-                    i.Dispose();
-                }
-
                 // Say Current User
                 Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
 
