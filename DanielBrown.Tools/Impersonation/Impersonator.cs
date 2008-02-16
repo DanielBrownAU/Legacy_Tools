@@ -74,7 +74,7 @@ namespace DanielBrown.Tools.Impersonation
                 if (!logonSucceeded)
                 {
                     // if the logon failed, get the error code and throw an exception
-                    throw new LogonException(string.Format("User logon failed. Error Number: {0}" + Marshal.GetLastWin32Error()));
+                    throw new LogonException(string.Format(string.Format("User logon failed. Error Number: {0}", Marshal.GetLastWin32Error())));
                 }
 
                 // if logon succeeds, create a WindowsIdentity instance
