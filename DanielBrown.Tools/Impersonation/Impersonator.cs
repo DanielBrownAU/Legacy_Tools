@@ -52,7 +52,7 @@ namespace DanielBrown.Tools.Impersonation
             this.m_ExpireTimer.Close();
             this.m_ExpireTimer.Dispose();
 
-            this.DoUndo();
+            this.Undo();
 
         }
 
