@@ -22,23 +22,23 @@ namespace ImpersonationConsoleSample
                 // Say Current User
                 Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
                 // Impersonating a User
-                i = new Impersonator(SampleUsername, SampleDomain, SamplePassword);
+                i = new Impersonator(SampleUsername, SampleDomain, SamplePassword, 1);
 
                 i.Impersonate();
 
                 // ... Run Code
                 // ...
-
+                System.Threading.Thread.Sleep(1000);
                 // Say Current User
                 Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
 
                 i.Undo();
 
                 // Say Current User
-                Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+                /*Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
 
                 // Impersonating a User with the using cluase
-                using (Impersonator im = new Impersonator(SampleUsername, SampleDomain, SamplePassword))
+                using (Impersonator im = new Impersonator(SampleUsername, SampleDomain, SamplePassword, 1))
                 {
                     im.Impersonate();
                     // ... Run Code
@@ -46,7 +46,7 @@ namespace ImpersonationConsoleSample
 
                     // Say Current User
                     Console.WriteLine(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
-                }
+                }*/
             }
             catch (LogonException le)
             {
